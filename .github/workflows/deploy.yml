@@ -1,58 +1,44 @@
-name: Deploy Casable Web
+name: Deploy Casable SPA (static)
 
 on:
   push:
     branches: [main]
   workflow_dispatch: {}
 
-concurrency:
-  group: casable-web
-  cancel-in-progress: true
-
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Sube los archivos al VPS (excluye basura)
-      - name: Upload project via SCP
-        uses: appleboy/scp-action@v0.1.7
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE || '' }}
-          source: |
-            .
-            !node_modules/**
-            !dist/**
-            !.git/**
-          target: ${{ secrets.VPS_PATH }}
+          node-version: 20
+          cache: "npm"
 
-      # Construye y (re)lanza el contenedor
-      - name: Build & restart container on VPS
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+        run: npm run build # Vite -> dist / CRA -> build
+
+      # Limpieza y subida atómica con rsync
+      - name: Deploy via rsync over SSH
+        uses: burnett01/rsync-deployments@7.0.1
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE || '' }}
-          script: |
-            set -e
-            cd "${{ secrets.VPS_PATH }}"
+          switches: -avzr --delete --checksum
+          path: dist/ # si usas CRA: build/
+          remote_path: ${{ secrets.WEB_ROOT }}
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-            # Construir imagen (multi-stage Dockerfile)
-            docker build -t casable-web:prod .
-
-            # Reiniciar contenedor de forma idempotente
-            docker rm -f casable-web || true
-            docker run -d --name casable-web \
-              -p 127.0.0.1:8089:80 \
-              --restart unless-stopped \
-              casable-web:prod
-
-            # Salud básica
-            curl -fsI http://127.0.0.1:8089 | head -n1
+      # (Opcional) Comprobación rápida
+      - name: Smoke check
+        run: |
+          echo "Deployed to ${{ secrets.SSH_HOST }}:${{ secrets.WEB_ROOT }}"
