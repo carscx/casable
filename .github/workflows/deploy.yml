@@ -1,0 +1,58 @@
+name: Deploy Casable Web
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: casable-web
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Sube los archivos al VPS (excluye basura)
+      - name: Upload project via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE || '' }}
+          source: |
+            .
+            !node_modules/**
+            !dist/**
+            !.git/**
+          target: ${{ secrets.VPS_PATH }}
+
+      # Construye y (re)lanza el contenedor
+      - name: Build & restart container on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE || '' }}
+          script: |
+            set -e
+            cd "${{ secrets.VPS_PATH }}"
+
+            # Construir imagen (multi-stage Dockerfile)
+            docker build -t casable-web:prod .
+
+            # Reiniciar contenedor de forma idempotente
+            docker rm -f casable-web || true
+            docker run -d --name casable-web \
+              -p 127.0.0.1:8089:80 \
+              --restart unless-stopped \
+              casable-web:prod
+
+            # Salud básica
+            curl -fsI http://127.0.0.1:8089 | head -n1

@@ -1,0 +1,270 @@
+:root {
+  --bg: #0b0f14;
+  --card: #131a22;
+  --on: #ffd24d;
+  --onBlue: #66b3ff;
+  --stroke: #1e2733;
+  --text: #e7eef7;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.app {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+h2 {
+  margin: 0;
+}
+
+.btn {
+  background: #1b2531;
+  color: #e7eef7;
+  border: 1px solid #253141;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  transition: transform 0.08s ease, background 0.2s ease;
+  cursor: pointer;
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.plano {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 120px 120px 120px 160px; /* 4 filas */
+  gap: 12px;
+}
+.plano.disabled {
+  opacity: 0.55;
+  filter: grayscale(0.2);
+  pointer-events: none;
+}
+
+.zona {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #141b24, #0f151c);
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+  color: #b6c6d9;
+  letter-spacing: 0.2px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  transition: transform 0.12s ease, box-shadow 0.3s ease, background 0.3s ease,
+    color 0.3s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.zona:active {
+  transform: scale(0.985);
+}
+.zona span {
+  position: relative;
+  z-index: 2;
+}
+
+/* Icono bombilla */
+.icon-bulb {
+  fill: #7f8fa3;
+  filter: none;
+  transition: transform 0.2s ease, filter 0.3s ease, fill 0.2s ease;
+}
+.zona.on .icon-bulb {
+  fill: var(--on);
+  filter: drop-shadow(0 0 10px rgba(255, 210, 77, 0.6));
+  animation: glow 1.6s ease-in-out infinite;
+}
+@keyframes glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px rgba(255, 210, 77, 0.55));
+    transform: translateY(0);
+  }
+  50% {
+    filter: drop-shadow(0 0 14px rgba(255, 210, 77, 0.9));
+    transform: translateY(-1px);
+  }
+}
+
+.zona.on {
+  background: radial-gradient(
+      60% 60% at 50% 40%,
+      rgba(255, 210, 77, 0.52),
+      rgba(255, 210, 77, 0.08) 60%,
+      rgba(20, 27, 36, 1) 100%
+    ),
+    linear-gradient(180deg, #1a2431, #0f151c);
+  color: #fff6d9;
+  box-shadow: 0 0 32px rgba(255, 210, 77, 0.28),
+    inset 0 0 40px rgba(255, 210, 77, 0.08);
+}
+
+/* Colores específicos */
+.cocina.on {
+  background: radial-gradient(
+      60% 60% at 50% 40%,
+      rgba(102, 179, 255, 0.52),
+      rgba(102, 179, 255, 0.08) 60%,
+      rgba(20, 27, 36, 1) 100%
+    ),
+    linear-gradient(180deg, #1a2431, #0f151c);
+  box-shadow: 0 0 34px rgba(102, 179, 255, 0.28),
+    inset 0 0 40px rgba(102, 179, 255, 0.1);
+  color: #eaf6ff;
+}
+.living {
+  grid-column: span 2;
+}
+.living.on {
+  background: radial-gradient(
+      60% 60% at 50% 40%,
+      rgba(255, 160, 122, 0.52),
+      rgba(255, 160, 122, 0.08) 60%,
+      rgba(20, 27, 36, 1) 100%
+    ),
+    linear-gradient(180deg, #1a2431, #0f151c);
+  box-shadow: 0 0 34px rgba(255, 160, 122, 0.28),
+    inset 0 0 40px rgba(255, 160, 122, 0.1);
+  color: #fff2ec;
+}
+
+/* Comedor / Ventilador */
+.comedor {
+  grid-column: span 2;
+  background: linear-gradient(180deg, #141b24, #0f151c);
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.comedor::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 40%,
+    rgba(255, 255, 255, 0.03) 40% 50%,
+    transparent 50% 100%
+  );
+  animation: spinBg 12s linear infinite;
+  opacity: 0.25;
+  pointer-events: none;
+}
+@keyframes spinBg {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Velocidad fan (brillo) */
+.comedor.nivel-0 {
+  box-shadow: inset 0 0 0 rgba(0, 0, 0, 0);
+}
+.comedor.nivel-1 {
+  box-shadow: inset 0 0 28px rgba(102, 179, 255, 0.18);
+}
+.comedor.nivel-2 {
+  box-shadow: inset 0 0 36px rgba(102, 179, 255, 0.26);
+}
+.comedor.nivel-3 {
+  box-shadow: inset 0 0 48px rgba(102, 179, 255, 0.34);
+}
+
+.ventilador {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 0 14px;
+}
+.ventilador .etiqueta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+}
+
+/* Icono ventilador con rotación por nivel */
+.icon-fan {
+  fill: #96a7bb;
+  transition: filter 0.2s ease;
+}
+.comedor.nivel-0 .icon-fan {
+  animation: none;
+}
+.comedor.nivel-1 .icon-fan {
+  animation: spin 1.4s linear infinite;
+  filter: drop-shadow(0 0 6px rgba(102, 179, 255, 0.3));
+}
+.comedor.nivel-2 .icon-fan {
+  animation: spin 0.9s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(102, 179, 255, 0.45));
+}
+.comedor.nivel-3 .icon-fan {
+  animation: spin 0.55s linear infinite;
+  filter: drop-shadow(0 0 12px rgba(102, 179, 255, 0.65));
+}
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.stepper strong {
+  min-width: 72px;
+  text-align: center;
+}
+.stepper .btn {
+  padding: 6px 12px;
+}
+
+/* Responsive móvil */
+@media (max-width: 380px) {
+  .plano {
+    grid-template-rows: 110px 110px 110px 150px;
+    gap: 10px;
+  }
+  .stepper strong {
+    min-width: 64px;
+  }
+}

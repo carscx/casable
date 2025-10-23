@@ -1,0 +1,7 @@
+services:
+  web:
+    build: .
+    image: casable-web:prod
+    ports:
+      - "127.0.0.1:8089:80"
+    restart: unless-stopped
