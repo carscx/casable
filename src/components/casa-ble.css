@@ -268,3 +268,10 @@ h2 {
     min-width: 64px;
   }
 }
+
+.acciones {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
