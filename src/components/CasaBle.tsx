@@ -59,7 +59,7 @@ function useBle() {
 
   async function connect() {
     const device = await navigator.bluetooth.requestDevice({
-      filters: [{ namePrefix: "CasaBLE" }],
+      filters: [{ namePrefix: "Kairos" }],
       optionalServices: [NUS_SERVICE]
     });
     deviceRef.current = device;
