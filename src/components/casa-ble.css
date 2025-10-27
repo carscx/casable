@@ -31,6 +31,7 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
 }
 header {
   display: flex;
@@ -41,6 +42,9 @@ header {
 }
 h2 {
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .btn {
@@ -289,7 +293,6 @@ h2 {
   display: flex;
   gap: 12px;
   justify-content: center;
-  flex-shrink: 0; /* Evita que se encoja */
 }
 .acciones button {
   flex: 1; /* Ocupan espacio equitativo */

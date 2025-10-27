@@ -1,5 +1,5 @@
-import "./App.css";
 import CasaBle from "./components/CasaBle";
+import "./App.css";
 
 function App() {
   return (

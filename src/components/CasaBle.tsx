@@ -1,5 +1,6 @@
 /// <reference types="web-bluetooth" />
 import { useRef, useState } from "react";
+import kairosLogo from "./../assets/logo-kairos.png";
 import "./casa-ble.css";
 
 const NUS_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
@@ -150,7 +151,9 @@ export default function CasaBle() {
   return (
     <div className="app">
       <header>
-        <h2>🏠 CasaBLE</h2>
+        <h2>
+          <img src={kairosLogo} alt="Kairos" width={50} /> Kairos
+        </h2>
         {!connected ? (
           <button className="btn" onClick={connect}>
             Conectar
